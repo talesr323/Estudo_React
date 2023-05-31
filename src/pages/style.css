@@ -1,0 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.Container {
+    width: 100%;
+    height:100vh ;
+    display:flex;
+    flex-flow: column wrap;
+    align-content: center;
+}
+
+table {
+    background-color: aqua;
+    margin-top: 50px;
+    border-collapse: collapse;
+    border: 2px solid black
+}
+
+table caption   {
+    background-color: yellow;
+    padding: 5px;
+    border: 2px solid black;
+}
+
+tr, th, td{
+    padding: 3px;
+    border: 2px solid black;
+}
+
