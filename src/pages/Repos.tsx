@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
+import { addDays, format } from 'date-fns';
 import "./style.css"
 
 type Repository = {
@@ -12,8 +13,8 @@ type Repository = {
 }
 
 export function Repos() {
-  const [startDate, setStartDate] = useState<string>(''); // Estado para armazenar a data de início
-  const [endDate, setEndDate] = useState<string>(''); // Estado para armazenar a data de fim
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   const { data, isFetching } = useQuery<Repository[]>('/projects', async () => {
     const response = await axios.get('http://localhost:3033/projects')
@@ -22,24 +23,23 @@ export function Repos() {
 
   const filteredData = data?.filter((repo) => {
     if (startDate && endDate) {
+      const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
       // Verifica se a data de vencimento está entre a data de início e a data de fim
       return (
-        repo.dataVencimento >= startDate ??
-        repo.dataVencimento <= endDate 
+        repo.dataVencimento >= startDate &&
+        repo.dataVencimento <= endDatePlusOneDay 
       );
     } else if (startDate === repo.dataVencimento || endDate === repo.dataVencimento) {
       // Verifica se a data de vencimento é igual à data de início ou igual à data de fim
       return (
-        repo.dataVencimento >= startDate ?? 
+        repo.dataVencimento >= startDate && 
         repo.dataVencimento <= endDate 
-        );
+      );
     } else {
       // Retorna todos os dados se as datas de início e fim não estiverem definidas
-      return false;
+      return true;
     }
   });
-  
-  
 
   return (
     <div className='Container'>
@@ -79,7 +79,7 @@ export function Repos() {
           {filteredData?.map((repo) => (
             <tr key={repo.codigoVenda}>
               <td>{repo.codigoVenda}</td>
-              <td>{new Date(repo.dataVencimento).toLocaleDateString('pt-BR')}</td>
+              <td>{format(new Date(repo.dataVencimento), 'dd/MM/yyyy')}</td>
               <td>{repo.NumeroBoleto}</td>
               <td>{repo.NumeroDocumento}</td>
               <td>{repo.cliente}</td>
