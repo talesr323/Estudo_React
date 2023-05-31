@@ -43,23 +43,27 @@ export function Repos() {
 
   return (
     <div className='Container'>
-      {isFetching && <p>Carregando...</p>}
-      <div>
-        <label htmlFor="startDate">Data de início:</label>
-        <input
-          type="date"
-          id="startDate"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-        <label htmlFor="endDate">Data de fim:</label>
-        <input
-          type="date"
-          id="endDate"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
+      <div className="data-filter">
+        <div className='date-group'>
+          <label htmlFor="startDate">Data de início:</label>
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+        <div className='date-group'>
+          <label htmlFor="endDate">Data de fim:</label>
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
       </div>
+      {isFetching && <p className='loading'>Loading&#8230;</p>}
       <table className='Relatorios'>
         <caption>Relatórios</caption>
         <thead>
@@ -68,7 +72,7 @@ export function Repos() {
             <th>Data Vencimento</th>
             <th>Número do Boleto</th>
             <th>Número do Documento</th>
-            <th>Cliente Nome Fantasia</th>
+            <th>Nome Fantasia</th>
           </tr>
         </thead>
         <tbody>
