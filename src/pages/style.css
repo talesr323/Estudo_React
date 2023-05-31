@@ -64,6 +64,7 @@ input[type="date"]:focus {
 table {
     background-color: var(--padrao_light_4);
     border-collapse: collapse;
+    overflow-y: scroll;
 }
 
 table caption   {
