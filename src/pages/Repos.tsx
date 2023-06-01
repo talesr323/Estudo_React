@@ -7,7 +7,7 @@ import "./style.css";
 type Repository = {
   ehDespesa: boolean;
   codigoVenda: string;
-  dataVencimento: string;
+  dataCompetencia: string;
   NumeroBoleto: string;
   NumeroDocumento: string;
   cliente: string;
@@ -42,19 +42,19 @@ export function Repos() {
           console.log('if 1', converteDespesa);
           return (
             repo.ehDespesa == converteDespesa &&
-            repo.dataVencimento >= startDate &&
-            repo.dataVencimento <= endDatePlusOneDay
+            repo.dataCompetencia >= startDate &&
+            repo.dataCompetencia <= endDatePlusOneDay
           );
         } else if (
-          (startDate === repo.dataVencimento ||
-            endDate === repo.dataVencimento) &&
+          (startDate === repo.dataCompetencia ||
+            endDate === repo.dataCompetencia) &&
           ehDespesa != "2"
         ) {
           // Verifica se a data de vencimento é igual à data de início ou igual à data de fim
           console.log('if 2', converteDespesa);
           return (
             repo.ehDespesa == converteDespesa &&
-            repo.dataVencimento == startDate
+            repo.dataCompetencia == startDate
           );
         } else {
           console.log('if 3', converteDespesa);
@@ -108,7 +108,7 @@ export function Repos() {
         <thead>
           <tr>
             <th>Venda Código</th>
-            <th>Data Vencimento</th>
+            <th>Data Competência</th>
             <th>Número do Boleto</th>
             <th>Número do Documento</th>
             <th>Nome Fantasia</th>
@@ -118,7 +118,7 @@ export function Repos() {
           {listaMostrada?.map((repo) => (
             <tr key={repo.codigoVenda}>
               <td>{repo.codigoVenda}</td>
-              <td>{format(new Date(repo.dataVencimento), "dd/MM/yyyy")}</td>
+              <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
               <td>{repo.NumeroBoleto}</td>
               <td>{repo.NumeroDocumento}</td>
               <td>{repo.cliente}</td>
