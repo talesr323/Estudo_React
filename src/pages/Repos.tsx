@@ -91,16 +91,16 @@ export function Repos() {
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-      </div>
-      <div>
-        <select
-          value={ehDespesa}
-          onChange={(t) => setEhDespesa(t.target.value)}
-        >
-          <option value={"2"}>Todos</option>
-          <option value={"0"}>Receita</option>
-          <option value={"1"}>Despesa</option>
-        </select>
+        <div className="date-group">
+          <select
+            value={ehDespesa}
+            onChange={(t) => setEhDespesa(t.target.value)}
+          >
+            <option value={"2"}>Todos</option>
+            <option value={"0"}>Receita</option>
+            <option value={"1"}>Despesa</option>
+          </select>
+        </div>
       </div>
       {isFetching && <p className="loading">Loading&#8230;</p>}
       <table className="Relatorios">
