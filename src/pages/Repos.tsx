@@ -15,7 +15,7 @@ type Repository = {
 
 export function Repos() {
   const [startDate, setStartDate] = useState<string>("");
-  const [ehDespesa, setEhDespesa] = useState<string>("2");
+  const [ehDespesa, setEhDespesa] = useState<boolean>(false);
   const [endDate, setEndDate] = useState<string>("");
   const [listaMostrada, setListaMostrada] = useState<Repository[]>([]);
 
@@ -25,43 +25,18 @@ export function Repos() {
   });
 
   const filtrarData = () => {
-    console.log("data 1", startDate);
-    console.log("data 2", endDate);
-    console.log("tipoDespesa", ehDespesa);
     if (startDate.trim().length > 0 && endDate.trim().length > 0) {
+      const endDatePlusOneDay = addDays(new Date(endDate), 1);
+
       const filteredData = data?.filter((repo) => {
-        let converteDespesa;
-        const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-        if (ehDespesa == "0") {
-          converteDespesa = false;
-        } else if (ehDespesa == "1") {
-          converteDespesa = true;
-        }
-        if (startDate != endDate && ehDespesa != "2") {
-          // Verifica se a data de vencimento está entre a data de início e a data de fim
-          console.log('if 1', converteDespesa);
-          return (
-            repo.ehDespesa == converteDespesa &&
-            repo.dataVencimento >= startDate &&
-            repo.dataVencimento <= endDatePlusOneDay
-          );
-        } else if (
-          (startDate === repo.dataVencimento ||
-            endDate === repo.dataVencimento) &&
-          ehDespesa != "2"
-        ) {
-          // Verifica se a data de vencimento é igual à data de início ou igual à data de fim
-          console.log('if 2', converteDespesa);
-          return (
-            repo.ehDespesa == converteDespesa &&
-            repo.dataVencimento == startDate
-          );
-        } else {
-          console.log('if 3', converteDespesa);
-          // Retorna todos os dados se as datas de início e fim não estiverem definidas
-          return true;
-        }
+        const converteDespesa = ehDespesa ? true : false;
+        const repoDataVencimento = new Date(repo.dataVencimento);
+        return (
+          (repo.ehDespesa === converteDespesa) &&
+          (repoDataVencimento >= new Date(startDate) && repoDataVencimento <= endDatePlusOneDay)
+        );
       });
+
       setListaMostrada(filteredData || []);
     }
   };
@@ -93,16 +68,16 @@ export function Repos() {
         </div>
         <div className="date-group">
           <select
-            value={ehDespesa}
-            onChange={(t) => setEhDespesa(t.target.value)}
+            value={ehDespesa ? "1" : "0"}
+            onChange={(e) => setEhDespesa(e.target.value === "1")}
           >
-            <option value={"2"}>Todos</option>
-            <option value={"0"}>Receita</option>
-            <option value={"1"}>Despesa</option>
+            <option value="2">Todos</option>
+            <option value="0">Receita</option>
+            <option value="1">Despesa</option>
           </select>
         </div>
       </div>
-      {isFetching && <p className="loading">Loading&#8230;</p>}
+      {isFetching && <p className="loading">Loading...</p>}
       <table className="Relatorios">
         <caption>Relatórios</caption>
         <thead>
