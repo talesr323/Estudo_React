@@ -3,34 +3,55 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { addDays, format } from "date-fns";
 import "./style.css";
+import { json } from "react-router-dom";
 
-type Repository = {
-  ehDespesa: boolean;
-  codigoVenda: string;
-  dataVencimento: string;
-  NumeroBoleto: string;
-  NumeroDocumento: string;
-  cliente: string;
+const info = [];
+
+const repository: any = {
+  ehDespesa: true,
+  codigoVenda: "123",
+  dataVencimento: "2023-06-01",
+  NumeroBoleto: "456",
+  NumeroDocumento: "789",
+  cliente: "Alice",
   Pagamentos: [
     {
-      Valor : string ,
-      FormaPagamento: string
-    }
-  ];
+      id: "1",
+      Valor: "100",
+      FormaPagamento: "Cartão de Crédito",
+    },
+    {
+      id: "2",
+      Valor: "200",
+      FormaPagamento: "Transferência Bancária",
+    },
+  ],
   Parcelas: [
     {
-      Quitado : boolean ,
-      FormaPagamento: string
-    }
-  ];
+      Quitado: false,
+      FormaPagamento: "din din",
+    },
+  ],
 };
 
+for (let index = 0; index < repository.Pagamentos.length; index++) {
+  const pagamento = repository.Pagamentos[index];
+
+  // Acessando as propriedades
+  const id = pagamento.id;
+  const valor = pagamento.Valor;
+  const formaPagamento = pagamento.FormaPagamento;
+
+  const json = { id, valor, formaPagamento };
+  info.push(json);
+}
 
 export function Repos() {
   const [startDate, setStartDate] = useState<string>("");
   const [ehDespesa, setEhDespesa] = useState<string>("2");
   const [endDate, setEndDate] = useState<string>("");
   const [listaMostrada, setListaMostrada] = useState<any[]>([]);
+  const [info, setInfo] = useState<any[]>([]);
 
   // const { data, isFetching } = useQuery<Repository[]>("/projects", async () => {
   //   const response = await axios.get("http://localhost:3033/projects");
@@ -38,6 +59,7 @@ export function Repos() {
   // });
 
   const isFetching = false;
+
 
   const data = [
     {
@@ -200,13 +222,15 @@ console.log(ehDespesa)
     
         const isDespesa = (ehDespesa === "1") ? repo.ehDespesa : (ehDespesa === "0") ? !repo.ehDespesa : true;
         const isWithinDateRange = (repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay);
-    
+            
         return (startDate !== endDate) ? (isDespesa && isWithinDateRange) : isWithinDateRange;
       });
     
       setListaMostrada(filteredData || []);
     }    
   };
+  
+  info.push(json)
 
   useEffect(() => {
     filtrarData();
