@@ -17,49 +17,55 @@ export function Repos() {
   const [startDate, setStartDate] = useState<string>("");
   const [ehDespesa, setEhDespesa] = useState<string>("2");
   const [endDate, setEndDate] = useState<string>("");
-  const [listaMostrada, setListaMostrada] = useState<Repository[]>([]);
+  const [listaMostrada, setListaMostrada] = useState<any[]>([]);
 
-  const { data, isFetching } = useQuery<Repository[]>("/projects", async () => {
-    const response = await axios.get("http://localhost:3033/projects");
-    return response.data;
-  });
+  // const { data, isFetching } = useQuery<Repository[]>("/projects", async () => {
+  //   const response = await axios.get("http://localhost:3033/projects");
+  //   return response.data;
+  // });
 
+  const isFetching = false;
+
+  const data = [
+    {
+      "codigoVenda": "1",
+      "dataCompetencia": "2023-05-28T22:18:14.024Z",
+      "NumeroBoleto": "3333333",
+      "NumeroDocumento": "3333333",
+      "cliente": "Tales",
+      "ehDespesa": true
+    },
+    {
+      "codigoVenda": "2",
+      "dataCompetencia": "2023-05-31T22:18:14.024Z",
+      "NumeroBoleto": "3333333",
+      "NumeroDocumento": "3333333",
+      "cliente": "Tales",
+      "ehDespesa": false
+    }
+  ]
+
+console.log(ehDespesa)
   const filtrarData = () => {
-    console.log("data 1", startDate);
-    console.log("data 2", endDate);
-    console.log("tipoDespesa", ehDespesa);
     if (startDate.trim().length > 0 && endDate.trim().length > 0) {
       const filteredData = data?.filter((repo) => {
-        let converteDespesa;
+       // let converteDespesa = !ehDespesa ? false : true
         const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-        if (ehDespesa == "0") {
-          converteDespesa = false;
-        } else if (ehDespesa == "1") {
-          converteDespesa = true;
-        }
-        if (startDate != endDate && ehDespesa != "2") {
+
+        if (startDate != endDate) {
           // Verifica se a data de vencimento está entre a data de início e a data de fim
-          console.log('if 1', converteDespesa);
-          return (
-            repo.ehDespesa == converteDespesa &&
-            repo.dataVencimento >= startDate &&
-            repo.dataVencimento <= endDatePlusOneDay
-          );
-        } else if (
-          (startDate === repo.dataVencimento ||
-            endDate === repo.dataVencimento) &&
-          ehDespesa != "2"
-        ) {
-          // Verifica se a data de vencimento é igual à data de início ou igual à data de fim
-          console.log('if 2', converteDespesa);
-          return (
-            repo.ehDespesa == converteDespesa &&
-            repo.dataVencimento == startDate
-          );
-        } else {
-          console.log('if 3', converteDespesa);
-          // Retorna todos os dados se as datas de início e fim não estiverem definidas
-          return true;
+          if(ehDespesa === "1"){
+            if(repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
+              return repo
+            }
+          }
+          else if(ehDespesa === "0") {
+            if(!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
+              return repo
+            } 
+          } else{
+            return repo
+          }
         }
       });
       setListaMostrada(filteredData || []);
@@ -118,7 +124,7 @@ export function Repos() {
           {listaMostrada?.map((repo) => (
             <tr key={repo.codigoVenda}>
               <td>{repo.codigoVenda}</td>
-              <td>{format(new Date(repo.dataVencimento), "dd/MM/yyyy")}</td>
+              <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
               <td>{repo.NumeroBoleto}</td>
               <td>{repo.NumeroDocumento}</td>
               <td>{repo.cliente}</td>
