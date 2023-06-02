@@ -48,6 +48,8 @@ export function Repos() {
 console.log(ehDespesa)
   const filtrarData = () => {
     if (startDate.trim().length > 0 && endDate.trim().length > 0) {
+      const endDatePlusOneDay = addDays(new Date(endDate), 1);
+
       const filteredData = data?.filter((repo) => {
        // let converteDespesa = !ehDespesa ? false : true
         const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
@@ -68,6 +70,7 @@ console.log(ehDespesa)
           }
         }
       });
+
       setListaMostrada(filteredData || []);
     }
   };
@@ -97,18 +100,18 @@ console.log(ehDespesa)
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
+        <div className="date-group">
+          <select
+            value={ehDespesa ? "1" : "0"}
+            onChange={(e) => setEhDespesa(e.target.value === "1")}
+          >
+            <option value="2">Todos</option>
+            <option value="0">Receita</option>
+            <option value="1">Despesa</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <select
-          value={ehDespesa}
-          onChange={(t) => setEhDespesa(t.target.value)}
-        >
-          <option value={"2"}>Todos</option>
-          <option value={"0"}>Receita</option>
-          <option value={"1"}>Despesa</option>
-        </select>
-      </div>
-      {isFetching && <p className="loading">Loading&#8230;</p>}
+      {isFetching && <p className="loading">Loading...</p>}
       <table className="Relatorios">
         <caption>Relatórios</caption>
         <thead>
