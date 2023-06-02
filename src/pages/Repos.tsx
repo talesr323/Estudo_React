@@ -57,8 +57,8 @@ export function Repos() {
       "NumeroDocumento": "3333333",
       "cliente": "Tales",
       "ehDespesa": true,
-      "FormaPag": "credito",
-      "ValorPag": "5.000,00"
+      "FormaPag": "dinheiro",
+      "ValorPag": "3.000,00"
     },
     {
       "codigoVenda": "2",
@@ -233,7 +233,7 @@ console.log(ehDespesa)
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-                <select
+        <select
           value={ehDespesa}
           onChange={(t) => setEhDespesa(t.target.value)}
         >
@@ -246,33 +246,44 @@ console.log(ehDespesa)
 
       </div>
       {isFetching && <p className="loading">Loading&#8230;</p>}
-      <table className="Relatorios">
-        <caption>Relatórios</caption>
-        <thead>
-          <tr>
-            <th>Venda Código</th>
-            <th>Data Vencimento</th>
-            <th>Número do Boleto</th>
-            <th>Número do Documento</th>
-            <th>Nome Fantasia</th>
-            <th>Forma de Pagamento</th>
-            <th>Valor de Pagamento</th>
-          </tr>
-        </thead>
-        <tbody>
-          {listaMostrada?.map((repo) => (
-            <tr key={repo.codigoVenda}>
-              <td>{repo.codigoVenda}</td>
-              <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
-              <td>{repo.NumeroBoleto}</td>
-              <td>{repo.NumeroDocumento}</td>
-              <td>{repo.cliente}</td>
-              <td>{repo.FormaPag}</td>
-              <td>R$ {repo.ValorPag}</td>
+      <div className="caption-container">
+        Relatórios
+      </div>
+      <div className="table-container">
+        <table className="Relatorios">
+          <thead>
+            <tr>
+              <th>Venda Código</th>
+              <th>Data Vencimento</th>
+              <th>Número do Boleto</th>
+              <th>Número do Documento</th>
+              <th>Nome Fantasia</th>
+              <th>Forma de Pagamento</th>
+              <th>Valor de Pagamento</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {listaMostrada?.map((repo) => (
+              <tr key={repo.FormaPag}>
+                <td>{repo.codigoVenda}</td>
+                <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
+                <td>{repo.NumeroBoleto}</td>
+                <td>{repo.NumeroDocumento}</td>
+                <td>{repo.cliente}</td>
+                <td>{repo.FormaPag}</td>
+                <td>R$ {repo.ValorPag}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="container-foot">
+          <tr className="t-row">
+            <td className="t-data" colSpan={7} style={{ textAlign: 'left' }}>
+                Valor Total:
+            </td>
+          </tr>
+      </div>
     </div>
   );
 }
