@@ -123,6 +123,17 @@ thead {
     color: var(--background-color);
 }
 
+.material-symbols-outlined {
+    width: 0px !important;
+    font-size: 2.7em;
+    color: var(--primary-color);
+    text-align: left;
+    cursor: pointer;
+    transition: .5s;
+}
+
+.material-symbols-outlined:hover { color: var(--secondary-color); }
+
 tr {
     transition: .5s;
     border: 1px solid var(--background-color);

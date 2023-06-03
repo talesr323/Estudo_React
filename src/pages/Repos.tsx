@@ -256,10 +256,13 @@ const filtrarData = () => {
       <div className="container-foot">
           <tr className="t-row">
             <td className="t-data" colSpan={7} style={{ textAlign: 'left' }}>
-                Total: {totalLancamentos}
+                Total: ${totalLancamentos}
             </td>
           </tr>
       </div>
+      <span className="material-symbols-outlined">
+          picture_as_pdf
+      </span>
     </div>
   );
 }
