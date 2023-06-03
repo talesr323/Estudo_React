@@ -1,9 +1,6 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { addDays, format } from "date-fns";
 import "./style.css";
-import { json } from "react-router-dom";
 
 const repository: any = {
   ehDespesa: true,
@@ -32,7 +29,6 @@ const repository: any = {
   ],
 };
 
-
 export function Repos() {
   const [startDate, setStartDate] = useState<string>("");
   const [ehDespesa, setEhDespesa] = useState<string>("2");
@@ -48,8 +44,6 @@ export function Repos() {
   // });
 
   const isFetching = false;
-  
-
 
   const data = [
     {
@@ -140,53 +134,54 @@ export function Repos() {
     },
   ];
 
-  let totalVendido = 0;
-  let valorRecebido = 0;
-
   const filtrarData = () => {
-    if (startDate.trim().length > 0 && endDate.trim().length > 0) {
-      let totalLancamentos = 0;
-      let totalLancamentosQuitados = 0;
-      
-      const filteredData = data?.filter((repo) => {
-        const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-  
-        if (startDate != endDate) {
-          if (ehDespesa === "1") {
-            if (repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
-              totalLancamentos += repo.ValorPag;
-              if (repo.Parcelas.some((parcela: any) => parcela.Quitado)) {
-                //totalLancamentosQuitados += repo.ValorPag;
-              }
-              return repo;
+    if (startDate.trim().length === 0 || endDate.trim().length === 0) {
+      return; // Retorna imediatamente se alguma das senhas estiver em branco
+    }
+
+    if (startDate > endDate) {
+      alert("A data de início não pode ser maior que a data de fim");
+      setStartDate("");
+      setEndDate("");
+      return; // Retorna imediatamente se a startData for maior que a endDate
+    }
+
+    let totalLancamentos = 0;
+    const filteredData = data?.filter((repo) => {
+      const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
+
+      if (startDate !== endDate) {
+        if (ehDespesa === "1") {
+          if (repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
+            totalLancamentos += repo.ValorPag;
+            if (repo.Parcelas.some((parcela: any) => parcela.Quitado)) {
+              //totalLancamentosQuitados += repo.ValorPag;
             }
-          } else if (ehDespesa === "0") {
-            if (!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
-              totalLancamentos += repo.ValorPag;
-              return repo;
-            }
-          } else {
+            return repo;
+          }
+        } else if (ehDespesa === "0") {
+          if (!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
             totalLancamentos += repo.ValorPag;
             return repo;
           }
+        } else {
+          totalLancamentos += repo.ValorPag;
+          return repo;
         }
-      });
-      
-      setTotalLancamentos(totalLancamentos);
-      //setTotalLancamentosQuitados(totalLancamentosQuitados);
-      setListaMostrada(filteredData || []);
-    }
+      }
+    });
+
+    setTotalLancamentos(totalLancamentos);
+    setListaMostrada(filteredData || []);
   };
-  
 
   useEffect(() => {
     filtrarData();
   }, [startDate, endDate, ehDespesa]);
 
-  console.log(listaMostrada);
-
   return (
     <div className="Container">
+      
       <div className="data-filter">
         <div className="date-group">
           <label htmlFor="startDate">Data de início:</label>
@@ -219,58 +214,57 @@ export function Repos() {
       </div>
       <div></div>
       {isFetching && <p className="loading">Loading&#8230;</p>}
-      <table className="Relatorios">
-        <caption>Relatórios</caption>
-        <thead>
-          <tr>
-            <th>Venda Código</th>
-            <th>Data Vencimento</th>
-            <th>Número do Boleto</th>
-            <th>Número do Documento</th>
-            <th>Nome Fantasia</th>
-            <th>Forma de Pagamento</th>
-            <th>Valor de Pagamento</th>
-            <th>Parcela</th>
-          </tr>
-        </thead>
-        <tbody>
-          {listaMostrada?.map((repo, i) => (
-            <tr key={i}>
-              <td>{repo.codigoVenda}</td>
-              <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
-              <td>{repo.NumeroBoleto}</td>
-              <td>{repo.NumeroDocumento}</td>
-              <td>{repo.cliente}</td>
-              <td>
-                <div style={{ display: "flex", flexDirection: "column" }}>
+      <div className="caption-container">
+        Relatórios
+      </div>
+      <div className="table-container">
+        <table className="Relatorios">
+          <thead>
+            <tr>
+              <th>Venda Código</th>
+              <th>Data Competencia</th>
+              <th>Número do Boleto</th>
+              <th>Número do Documento</th>
+              <th>Nome Fantasia</th>
+              <th>Forma de Pagamento</th>
+              <th>Valor de Pagamento</th>
+              <th>Parcela</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listaMostrada?.map((repo, i) => (
+              <tr key={i}>
+                <td>{repo.codigoVenda}</td>
+                <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
+                <td>{repo.NumeroBoleto}</td>
+                <td>{repo.NumeroDocumento}</td>
+                <td>{repo.cliente}</td>
+                <td>
                   {repo.Pagamentos.map((g: any) => {
                     return (
-                      <span>
-                        {g.FormaPagamento} - {g.Valor}
-                      </span>
+                      <span>{g.FormaPagamento} - {g.Valor}</span>
                     );
                   })}
-                </div>
-              </td>
-              <td>R$ {repo.ValorPag}</td>
-              <td>
-              <div style={{ display: "flex", flexDirection: "column" }}>
+                </td>
+                <td>R$ {repo.ValorPag}</td>
+                <td>
                   {repo.Parcelas.map((p: any) => {
-                    return (
-                      //fragmento - fragment react
-                      <>
-                        <span>N° {p.Codigo} - {p.Quitado ? 'Quitado' : 'Aberto'}</span>
-                      </>
+                    return (        
+                      <span>N° {p.Codigo} - {p.Quitado ? 'Quitado' : 'Aberto'}</span>
                     )
                   })}
-                  </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div>
-        <tfoot>Total de lançamentos: {totalLancamentos}</tfoot>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="container-foot">
+          <tr className="t-row">
+            <td className="t-data" colSpan={7} style={{ textAlign: 'left' }}>
+                Total: {totalLancamentos}
+            </td>
+          </tr>
       </div>
     </div>
   );

@@ -150,6 +150,10 @@ td {
     text-transform: capitalize;
 }
 
+td span {
+    display: block;
+}
+
 /* Loading effect */
 /* Absolute Center Spinner */
 .loading {
