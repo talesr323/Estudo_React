@@ -3,26 +3,33 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { addDays, format } from "date-fns";
 import "./style.css";
+import { json } from "react-router-dom";
 
-type Repository = {
-  ehDespesa: boolean;
-  codigoVenda: string;
-  dataVencimento: string;
-  NumeroBoleto: string;
-  NumeroDocumento: string;
-  cliente: string;
+const repository: any = {
+  ehDespesa: true,
+  codigoVenda: "123",
+  dataVencimento: "2023-06-01",
+  NumeroBoleto: "456",
+  NumeroDocumento: "789",
+  cliente: "Alice",
   Pagamentos: [
     {
-      Valor : string ,
-      FormaPagamento: string
-    }
-  ];
+      id: "1",
+      Valor: "100",
+      FormaPagamento: "Cartão de Crédito",
+    },
+    {
+      id: "2",
+      Valor: "200",
+      FormaPagamento: "Transferência Bancária",
+    },
+  ],
   Parcelas: [
     {
-      Quitado : boolean ,
-      FormaPagamento: string
-    }
-  ];
+      Quitado: false,
+      FormaPagamento: "din din",
+    },
+  ],
 };
 
 
@@ -31,6 +38,7 @@ export function Repos() {
   const [ehDespesa, setEhDespesa] = useState<string>("2");
   const [endDate, setEndDate] = useState<string>("");
   const [listaMostrada, setListaMostrada] = useState<any[]>([]);
+
 
   // const { data, isFetching } = useQuery<Repository[]>("/projects", async () => {
   //   const response = await axios.get("http://localhost:3033/projects");
@@ -41,176 +49,145 @@ export function Repos() {
 
   const data = [
     {
-      "codigoVenda": "1",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
+      codigoVenda: "1",
+      dataCompetencia: "2023-05-28T22:18:14.024Z",
+      NumeroBoleto: "3333333",
+      NumeroDocumento: "3333333",
+      cliente: "Tales",
+      ehDespesa: false,
+      FormaPag: "dinheiro",
+      ValorPag: 3000,
+      Pagamentos: [
+        {
+          Data: "2023-06-03T00:12:14.921Z",
+          FormaPagamento: "credito",
+          Valor: "100",
+        },
+      ],
+      Parcelas : [
+        {
+          Codigo : "0",
+          ValorParcela: 33,
+          Quitado: false,
+          DataQuitacao: "2023-06-03T00:12:14.921Z",
+        },
+        {
+          Codigo : "1",
+          ValorParcela: 33,
+          Quitado: true,
+          DataQuitacao: "2023-06-03T00:12:14.921Z",
+        }
+      ],
     },
     {
-      "codigoVenda": "1",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
+      codigoVenda: "1",
+      dataCompetencia: "2023-05-28T22:18:14.024Z",
+      NumeroBoleto: "3333333",
+      NumeroDocumento: "3333333",
+      cliente: "Tales",
+      ehDespesa: true,
+      FormaPag: "credito",
+      ValorPag: 5000,
+      Pagamentos: [
+        {
+          Data: "2023-06-03T00:12:14.921Z",
+          FormaPagamento: "pix",
+          Valor: "100",
+        },
+      ],
+      Parcelas : [
+        {
+          Codigo : "0",
+          ValorParcela: 33,
+          Quitado: true,
+          DataQuitacao: "2023-06-03T00:12:14.921Z",
+        }
+      ],
     },
     {
-      "codigoVenda": "2",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
+      codigoVenda: "3",
+      dataCompetencia: "2023-05-28T22:18:14.024Z",
+      NumeroBoleto: "3333333",
+      NumeroDocumento: "3333333",
+      cliente: "Tales",
+      ehDespesa: true,
+      FormaPag: "dinheiro",
+      ValorPag: 3000,
+      Pagamentos: [
+        {
+          Data: "2023-06-03T00:12:14.921Z",
+          FormaPagamento: "pix",
+          Valor: 1500,
+        },
+        {
+          Data: "2023-06-03T00:12:14.921Z",
+          FormaPagamento: "credito",
+          Valor: 1500,
+        },
+      ],
+      Parcelas : [
+        {
+          Codigo : "0",
+          ValorParcela: 33,
+          Quitado: true,
+          DataQuitacao: "2023-06-03T00:12:14.921Z",
+        }
+      ],
     },
-    {
-      "codigoVenda": "3",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "4",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "5",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "6",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "7",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "8",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "9",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "10",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "11",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "12",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "13",
-      "dataCompetencia": "2023-05-28T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "3333333",
-      "cliente": "Tales",
-      "ehDespesa": true,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-    {
-      "codigoVenda": "14",
-      "dataCompetencia": "2023-05-31T22:18:14.024Z",
-      "NumeroBoleto": "3333333",
-      "NumeroDocumento": "pedido515",
-      "cliente": "Tales",
-      "ehDespesa": false,
-      "FormaPag": "dinheiro",
-      "ValorPag": "3.000,00"
-    },
-  ]
+  ];
 
-console.log(ehDespesa)
+  let totalVendido = 0;
+  let valorRecebido = 0;
+
+  console.log(ehDespesa);
   const filtrarData = () => {
     if (startDate.trim().length > 0 && endDate.trim().length > 0) {
       const filteredData = data?.filter((repo) => {
+       // let converteDespesa = !ehDespesa ? false : true
         const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-    
-        const isDespesa = (ehDespesa === "1") ? repo.ehDespesa : (ehDespesa === "0") ? !repo.ehDespesa : true;
-        const isWithinDateRange = (repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay);
-    
-        return (startDate !== endDate) ? (isDespesa && isWithinDateRange) : isWithinDateRange;
+
+        if (startDate != endDate) {
+          // Verifica se a data de vencimento está entre a data de início e a data de fim
+          if(ehDespesa === "1"){
+            if(repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
+              totalVendido = totalVendido + repo.ValorPag;
+            
+              /**repo.Parcelas.forEach(element => {
+                valorRecebido = valorRecebido + element.ValorParcela;
+              });*/
+              
+              return repo
+            }
+          }
+          else if(ehDespesa === "0") {
+            if(!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
+              /**totalVendido = totalVendido + repo.ValorPag;
+            
+              repo.Parcelas.forEach(element => {
+                valorRecebido = valorRecebido + element.ValorParcela;
+              });*/
+
+              return repo
+            } 
+          } else {
+            totalVendido = totalVendido + repo.ValorPag;
+
+            /**repo.Parcelas.forEach(element => {
+              valorRecebido = valorRecebido + element.ValorParcela;
+            });*/
+            return repo
+          }
+        }
       });
-    
       setListaMostrada(filteredData || []);
-    }    
+    }
   };
 
   useEffect(() => {
     filtrarData();
   }, [startDate, endDate, ehDespesa]);
+
+  console.log(listaMostrada);
 
   return (
     <div className="Container">
@@ -233,56 +210,72 @@ console.log(ehDespesa)
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-        <select
-          value={ehDespesa}
-          onChange={(t) => setEhDespesa(t.target.value)}
-        >
-          <option value={"2"}>Todos</option>
-          <option value={"0"}>Receita</option>
-          <option value={"1"}>Despesa</option>
-        </select>
+        <div className="date-group">
+          <select
+            value={ehDespesa}
+            onChange={(t) => setEhDespesa(t.target.value)}
+          >
+            <option value={"2"}>Todos</option>
+            <option value={"0"}>Receita</option>
+            <option value={"1"}>Despesa</option>
+          </select>
+        </div>
       </div>
-      <div>
-
-      </div>
+      <div></div>
       {isFetching && <p className="loading">Loading&#8230;</p>}
-      <div className="caption-container">
-        Relatórios
-      </div>
-      <div className="table-container">
-        <table className="Relatorios">
-          <thead>
-            <tr>
-              <th>Venda Código</th>
-              <th>Data Vencimento</th>
-              <th>Número do Boleto</th>
-              <th>Número do Documento</th>
-              <th>Nome Fantasia</th>
-              <th>Forma de Pagamento</th>
-              <th>Valor de Pagamento</th>
-            </tr>
-          </thead>
-          <tbody>
-            {listaMostrada?.map((repo) => (
-              <tr key={repo.FormaPag}>
-                <td>{repo.codigoVenda}</td>
-                <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
-                <td>{repo.NumeroBoleto}</td>
-                <td>{repo.NumeroDocumento}</td>
-                <td>{repo.cliente}</td>
-                <td>{repo.FormaPag}</td>
-                <td>R$ {repo.ValorPag}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="container-foot">
-          <tr className="t-row">
-            <td className="t-data" colSpan={7} style={{ textAlign: 'left' }}>
-                Valor Total:
-            </td>
+      <table className="Relatorios">
+        <caption>Relatórios</caption>
+        <thead>
+          <tr>
+            <th>Venda Código</th>
+            <th>Data Vencimento</th>
+            <th>Número do Boleto</th>
+            <th>Número do Documento</th>
+            <th>Nome Fantasia</th>
+            <th>Forma de Pagamento</th>
+            <th>Valor de Pagamento</th>
+            <th>Parcela</th>
           </tr>
+        </thead>
+        <tbody>
+          {listaMostrada?.map((repo, i) => (
+            <tr key={i}>
+              <td>{repo.codigoVenda}</td>
+              <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
+              <td>{repo.NumeroBoleto}</td>
+              <td>{repo.NumeroDocumento}</td>
+              <td>{repo.cliente}</td>
+              <td>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {repo.Pagamentos.map((g: any) => {
+                    return (
+                      <span>
+                        {g.FormaPagamento} - {g.Valor}
+                      </span>
+                    );
+                  })}
+                </div>
+              </td>
+              <td>R$ {repo.ValorPag}</td>
+              <td>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                  {repo.Parcelas.map((p: any) => {
+                    return (
+                      //fragmento - fragment react
+                      <>
+                        <span>N° {p.Codigo} - {p.Quitado ? 'Quitado' : 'Aberto'}</span>
+                      </>
+                    )
+                  })}
+                  </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div>
+        <tfoot>Valor total de vendas: {totalVendido}</tfoot>
+        <tfoot>Valor total de vendas recebidas: {valorRecebido}</tfoot>
       </div>
     </div>
   );
