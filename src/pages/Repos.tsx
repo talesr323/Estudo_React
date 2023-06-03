@@ -38,6 +38,8 @@ export function Repos() {
   const [ehDespesa, setEhDespesa] = useState<string>("2");
   const [endDate, setEndDate] = useState<string>("");
   const [listaMostrada, setListaMostrada] = useState<any[]>([]);
+  const [totalLancamentos, setTotalLancamentos] = useState<number>(0);
+  //const [totalLancamentosQuitados, setTotalLancamentosQuitados] = useState<number>(0);
 
 
   // const { data, isFetching } = useQuery<Repository[]>("/projects", async () => {
@@ -46,6 +48,8 @@ export function Repos() {
   // });
 
   const isFetching = false;
+  
+
 
   const data = [
     {
@@ -139,49 +143,41 @@ export function Repos() {
   let totalVendido = 0;
   let valorRecebido = 0;
 
-  console.log(ehDespesa);
   const filtrarData = () => {
     if (startDate.trim().length > 0 && endDate.trim().length > 0) {
+      let totalLancamentos = 0;
+      let totalLancamentosQuitados = 0;
+      
       const filteredData = data?.filter((repo) => {
-       // let converteDespesa = !ehDespesa ? false : true
         const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-
+  
         if (startDate != endDate) {
-          // Verifica se a data de vencimento está entre a data de início e a data de fim
-          if(ehDespesa === "1"){
-            if(repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
-              totalVendido = totalVendido + repo.ValorPag;
-            
-              /**repo.Parcelas.forEach(element => {
-                valorRecebido = valorRecebido + element.ValorParcela;
-              });*/
-              
-              return repo
+          if (ehDespesa === "1") {
+            if (repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
+              totalLancamentos += repo.ValorPag;
+              if (repo.Parcelas.some((parcela: any) => parcela.Quitado)) {
+                //totalLancamentosQuitados += repo.ValorPag;
+              }
+              return repo;
             }
-          }
-          else if(ehDespesa === "0") {
-            if(!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
-              /**totalVendido = totalVendido + repo.ValorPag;
-            
-              repo.Parcelas.forEach(element => {
-                valorRecebido = valorRecebido + element.ValorParcela;
-              });*/
-
-              return repo
-            } 
+          } else if (ehDespesa === "0") {
+            if (!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
+              totalLancamentos += repo.ValorPag;
+              return repo;
+            }
           } else {
-            totalVendido = totalVendido + repo.ValorPag;
-
-            /**repo.Parcelas.forEach(element => {
-              valorRecebido = valorRecebido + element.ValorParcela;
-            });*/
-            return repo
+            totalLancamentos += repo.ValorPag;
+            return repo;
           }
         }
       });
+      
+      setTotalLancamentos(totalLancamentos);
+      //setTotalLancamentosQuitados(totalLancamentosQuitados);
       setListaMostrada(filteredData || []);
     }
   };
+  
 
   useEffect(() => {
     filtrarData();
@@ -274,8 +270,7 @@ export function Repos() {
         </tbody>
       </table>
       <div>
-        <tfoot>Valor total de vendas: {totalVendido}</tfoot>
-        <tfoot>Valor total de vendas recebidas: {valorRecebido}</tfoot>
+        <tfoot>Total de lançamentos: {totalLancamentos}</tfoot>
       </div>
     </div>
   );
