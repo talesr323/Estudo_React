@@ -29,7 +29,6 @@ const repository: any = {
   ],
 };
 
-
 export function Repos() {
   const [startDate, setStartDate] = useState<string>("");
   const [ehDespesa, setEhDespesa] = useState<string>("2");
@@ -135,39 +134,45 @@ export function Repos() {
     },
   ];
 
-const filtrarData = () => {
-    if (startDate.trim().length > 0 && endDate.trim().length > 0) {
-      let totalLancamentos = 0;
-      // let totalLancamentosQuitados = 0;
-      
-      const filteredData = data?.filter((repo) => {
-        const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-  
-        if (startDate != endDate) {
-          if (ehDespesa === "1") {
-            if (repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
-              totalLancamentos += repo.ValorPag;
-              if (repo.Parcelas.some((parcela: any) => parcela.Quitado)) {
-                //totalLancamentosQuitados += repo.ValorPag;
-              }
-              return repo;
+  const filtrarData = () => {
+    if (startDate.trim().length === 0 || endDate.trim().length === 0) {
+      return; // Retorna imediatamente se alguma das senhas estiver em branco
+    }
+
+    if (startDate > endDate) {
+      alert("A data de início não pode ser maior que a data de fim");
+      setStartDate("");
+      setEndDate("");
+      return; // Retorna imediatamente se a startData for maior que a endDate
+    }
+
+    let totalLancamentos = 0;
+    const filteredData = data?.filter((repo) => {
+      const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
+
+      if (startDate !== endDate) {
+        if (ehDespesa === "1") {
+          if (repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
+            totalLancamentos += repo.ValorPag;
+            if (repo.Parcelas.some((parcela: any) => parcela.Quitado)) {
+              //totalLancamentosQuitados += repo.ValorPag;
             }
-          } else if (ehDespesa === "0") {
-            if (!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
-              totalLancamentos += repo.ValorPag;
-              return repo;
-            }
-          } else {
+            return repo;
+          }
+        } else if (ehDespesa === "0") {
+          if (!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
             totalLancamentos += repo.ValorPag;
             return repo;
           }
+        } else {
+          totalLancamentos += repo.ValorPag;
+          return repo;
         }
-      });
-      
-      setTotalLancamentos(totalLancamentos);
-      //setTotalLancamentosQuitados(totalLancamentosQuitados);
-      setListaMostrada(filteredData || []);
-    }
+      }
+    });
+
+    setTotalLancamentos(totalLancamentos);
+    setListaMostrada(filteredData || []);
   };
 
   useEffect(() => {
@@ -176,6 +181,7 @@ const filtrarData = () => {
 
   return (
     <div className="Container">
+      
       <div className="data-filter">
         <div className="date-group">
           <label htmlFor="startDate">Data de início:</label>
@@ -216,7 +222,7 @@ const filtrarData = () => {
           <thead>
             <tr>
               <th>Venda Código</th>
-              <th>Data Vencimento</th>
+              <th>Data Competencia</th>
               <th>Número do Boleto</th>
               <th>Número do Documento</th>
               <th>Nome Fantasia</th>
