@@ -234,14 +234,16 @@ console.log(ehDespesa)
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-        <select
-          value={ehDespesa}
-          onChange={(t) => setEhDespesa(t.target.value)}
-        >
-          <option value={"2"}>Todos</option>
-          <option value={"0"}>Receita</option>
-          <option value={"1"}>Despesa</option>
-        </select>
+        <div className="date-group">
+          <select
+            value={ehDespesa}
+            onChange={(t) => setEhDespesa(t.target.value)}
+          >
+            <option value={"2"}>Todos</option>
+            <option value={"0"}>Receita</option>
+            <option value={"1"}>Despesa</option>
+          </select>
+        </div>
       </div>
       <div>
 
