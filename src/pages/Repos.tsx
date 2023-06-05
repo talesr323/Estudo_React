@@ -1,9 +1,8 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { addDays, format } from "date-fns";
 import "./style.css";
-import { json } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from 'jspdf-autotable'
 
 const repository: any = {
   ehDespesa: true,
@@ -38,6 +37,9 @@ export function Repos() {
   const [ehDespesa, setEhDespesa] = useState<string>("2");
   const [endDate, setEndDate] = useState<string>("");
   const [listaMostrada, setListaMostrada] = useState<any[]>([]);
+  const [totalLancamentos, setTotalLancamentos] = useState<number>(0);
+  //const [totalLancamentosQuitados, setTotalLancamentosQuitados] = useState<number>(0);
+
 
 
   // const { data, isFetching } = useQuery<Repository[]>("/projects", async () => {
@@ -53,7 +55,7 @@ export function Repos() {
       dataCompetencia: "2023-05-28T22:18:14.024Z",
       NumeroBoleto: "3333333",
       NumeroDocumento: "3333333",
-      cliente: "Tales",
+      cliente: "Tales renan cervantes simoes santos",
       ehDespesa: false,
       FormaPag: "dinheiro",
       ValorPag: 3000,
@@ -63,6 +65,11 @@ export function Repos() {
           FormaPagamento: "credito",
           Valor: "100",
         },
+        {
+          Data: "2023-06-03T00:12:14.921Z",
+          FormaPagamento: "pix",
+          Valor: "100",
+        }
       ],
       Parcelas : [
         {
@@ -119,11 +126,6 @@ export function Repos() {
           FormaPagamento: "pix",
           Valor: 1500,
         },
-        {
-          Data: "2023-06-03T00:12:14.921Z",
-          FormaPagamento: "credito",
-          Valor: 1500,
-        },
       ],
       Parcelas : [
         {
@@ -136,52 +138,84 @@ export function Repos() {
     },
   ];
 
-  let totalVendido = 0;
-  let valorRecebido = 0;
-
-  console.log(ehDespesa);
   const filtrarData = () => {
-    if (startDate.trim().length > 0 && endDate.trim().length > 0) {
-      const filteredData = data?.filter((repo) => {
-       // let converteDespesa = !ehDespesa ? false : true
-        const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
-
-        if (startDate != endDate) {
-          // Verifica se a data de vencimento está entre a data de início e a data de fim
-          if(ehDespesa === "1"){
-            if(repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
-              totalVendido = totalVendido + repo.ValorPag;
-            
-              repo.Parcelas.forEach(element => {
-                valorRecebido = valorRecebido + element.ValorParcela;
-              });
-              
-              return repo
-            }
-          }
-          else if(ehDespesa === "0") {
-            if(!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay){
-              totalVendido = totalVendido + repo.ValorPag;
-            
-              repo.Parcelas.forEach(element => {
-                valorRecebido = valorRecebido + element.ValorParcela;
-              });
-
-              return repo
-            } 
-          } else {
-            totalVendido = totalVendido + repo.ValorPag;
-
-            repo.Parcelas.forEach(element => {
-              valorRecebido = valorRecebido + element.ValorParcela;
-            });
-            return repo
-          }
-        }
-      });
-      setListaMostrada(filteredData || []);
+    if (startDate.trim().length === 0 || endDate.trim().length === 0) {
+      return; // Retorna imediatamente se alguma das senhas estiver em branco
     }
+
+    if (startDate > endDate) {
+      alert("A data de início não pode ser maior que a data de fim");
+      setStartDate("");
+      setEndDate("");
+      return; // Retorna imediatamente se a startData for maior que a endDate
+    }
+
+    let totalLancamentos = 0;
+    const filteredData = data?.filter((repo) => {
+      const endDatePlusOneDay = addDays(new Date(endDate), 1).toISOString();
+
+      if (startDate !== endDate) {
+        if (ehDespesa === "1") {
+          if (repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
+            totalLancamentos += repo.ValorPag;
+            if (repo.Parcelas.some((parcela: any) => parcela.Quitado)) {
+              //totalLancamentosQuitados += repo.ValorPag;
+            }
+            return repo;
+          }
+        } else if (ehDespesa === "0") {
+          if (!repo.ehDespesa && repo.dataCompetencia >= startDate && repo.dataCompetencia <= endDatePlusOneDay) {
+            totalLancamentos += repo.ValorPag;
+            return repo;
+          }
+        } else {
+          totalLancamentos += repo.ValorPag;
+          return repo;
+        }
+      }
+    });
+
+    setTotalLancamentos(totalLancamentos);
+    setListaMostrada(filteredData || []);
   };
+  const generatePDF = () => {
+  const doc = new jsPDF("p", "pt", "a4");
+
+  const table = document.querySelector("#relatoriosTable");
+
+  if (table instanceof HTMLElement) {
+    const columns = Array.from(table.querySelectorAll("thead th")).map(
+      (header) => header.textContent?.trim() || ""
+    );
+
+    const rows = Array.from(table.querySelectorAll("tbody tr")).map((row) => {
+      const rowData = Array.from(row.querySelectorAll("td")).map((cell) =>
+        cell.textContent?.trim() || ""
+      );
+      // Update the "Forma de Pagamento" cell to display each payment method on a separate line
+      const formaPagamentoIndex = columns.indexOf("Forma de Pagamento");
+      if (formaPagamentoIndex !== -1) {
+        const formaPagamentoValue = rowData[formaPagamentoIndex];
+        const formattedFormaPagamento = formaPagamentoValue.replace(/ - /g, "\n");
+        rowData[formaPagamentoIndex] = formattedFormaPagamento;
+      }
+      return rowData;
+    });
+
+    // Adicionar linha de resumo com o total
+    const totalRow = ["Total: R$ " + totalLancamentos];
+    rows.push(totalRow);
+
+    autoTable(doc, {
+      head: [columns],
+      body: rows,
+    });
+
+    doc.save("Relatorio diario.pdf");
+  }
+};
+  
+
 
   useEffect(() => {
     filtrarData();
@@ -210,71 +244,77 @@ export function Repos() {
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-        <select
-          value={ehDespesa}
-          onChange={(t) => setEhDespesa(t.target.value)}
-        >
-          <option value={"2"}>Todos</option>
-          <option value={"0"}>Receita</option>
-          <option value={"1"}>Despesa</option>
-        </select>
+        <div className="date-group">
+          <select
+            value={ehDespesa}
+            onChange={(t) => setEhDespesa(t.target.value)}
+          >
+            <option value={"2"}>Todos</option>
+            <option value={"0"}>Receita</option>
+            <option value={"1"}>Despesa</option>
+          </select>
+        </div>
       </div>
       <div></div>
       {isFetching && <p className="loading">Loading&#8230;</p>}
-      <table className="Relatorios">
-        <caption>Relatórios</caption>
-        <thead>
-          <tr>
-            <th>Venda Código</th>
-            <th>Data Vencimento</th>
-            <th>Número do Boleto</th>
-            <th>Número do Documento</th>
-            <th>Nome Fantasia</th>
-            <th>Forma de Pagamento</th>
-            <th>Valor de Pagamento</th>
-            <th>Parcela</th>
-          </tr>
-        </thead>
-        <tbody>
-          {listaMostrada?.map((repo, i) => (
-            <tr key={i}>
-              <td>{repo.codigoVenda}</td>
-              <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
-              <td>{repo.NumeroBoleto}</td>
-              <td>{repo.NumeroDocumento}</td>
-              <td>{repo.cliente}</td>
-              <td>
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {repo.Pagamentos.map((g: any) => {
-                    return (
-                      <span>
-                        {g.FormaPagamento} - {g.Valor}
-                      </span>
-                    );
-                  })}
-                </div>
-              </td>
-              <td>R$ {repo.ValorPag}</td>
-              <td>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                  {repo.Parcelas.map((p: any) => {
-                    return (
-                      //fragmento - fragment react
-                      <>
-                        <span>N° {p.Codigo} - {p.Quitado ? 'Quitado' : 'Aberto'}</span>
-                      </>
-                    )
-                  })}
-                  </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div>
-        <tfoot>Valor total de vendas: {totalVendido}</tfoot>
-        <tfoot>Valor total de vendas recebidas: {valorRecebido}</tfoot>
+      <div className="caption-container">
+        Relatórios
       </div>
+      <div className="table-container">
+      <table className="Relatorios" id="relatoriosTable">
+  <thead>
+    <tr>
+      <th>Venda Código</th>
+      <th>Data Competencia</th>
+      <th>Número do Boleto</th>
+      <th>Número do Documento</th>
+      <th>Nome Fantasia</th>
+      <th>Forma de Pagamento</th>
+      <th>Valor de Pagamento</th>
+      <th>Parcela</th>
+    </tr>
+  </thead>
+  <tbody>
+    {listaMostrada?.map((repo, i) => (
+      <tr key={i}>
+        <td>{repo.codigoVenda}</td>
+        <td>{format(new Date(repo.dataCompetencia), "dd/MM/yyyy")}</td>
+        <td>{repo.NumeroBoleto}</td>
+        <td>{repo.NumeroDocumento}</td>
+        <td>{repo.cliente}</td>
+        <td>
+          {repo.Pagamentos.map((g: any) => {
+            return (
+              <span>{g.FormaPagamento} - {g.Valor} <br></br></span>
+              
+            );
+          })}
+        </td>
+        <td>R$ {repo.ValorPag}</td>
+        <td>
+        {repo.Parcelas.map((p: any) => {
+       return (        
+      <span>N° {p.Codigo} - {p.Quitado ? 'Quitado' : 'Aberto'} <br></br></span>
+       )
+      })}
+
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+      </div>
+      <div className="container-foot">
+          <tr className="t-row">
+            <td className="t-data" colSpan={7} style={{ textAlign: 'left' }}>
+                Total: ${totalLancamentos}
+            </td>
+          </tr>
+      </div>
+      <button onClick={generatePDF} className="material-symbols-outlined">
+          picture_as_pdf
+      </button>
     </div>
   );
 }

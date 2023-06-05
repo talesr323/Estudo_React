@@ -8,7 +8,7 @@
 }
 
 :root {
-    --primary-color: #525252;
+    --primary-color: #a3afc8;
     --secondary-color: #666666;
     --background-color: #ffffff;
     --zebra-color: #f4f7fc;
@@ -123,6 +123,17 @@ thead {
     color: var(--background-color);
 }
 
+.material-symbols-outlined {
+    width: 0px !important;
+    font-size: 2.7em;
+    color: var(--primary-color);
+    text-align: left;
+    cursor: pointer;
+    transition: .5s;
+}
+
+.material-symbols-outlined:hover { color: var(--secondary-color); }
+
 tr {
     transition: .5s;
     border: 1px solid var(--background-color);
@@ -138,7 +149,7 @@ th {
     padding: 20px;
     font-size: 1em;
     color: var(--secondary-color);
-    text-shadow: .3px .3px .3px var(--padrao_light_4);
+    text-shadow: .1px .1px .1px var(--padrao_light_4);
     text-align: left;
 }
 
@@ -148,6 +159,10 @@ td {
     color: rgba(0, 0, 0, 0.856);
     text-align: left;
     text-transform: capitalize;
+}
+
+td span {
+    display: block;
 }
 
 /* Loading effect */
@@ -270,3 +285,52 @@ td {
         transform: rotate(360deg);
     }
 }
+
+/* Media Queries */
+
+@media (max-width: 876px) and (min-width: 666px){
+    .date-group {
+        display: flex;
+        align-items: baseline;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .data-group label {
+        font-size: .9em;
+    }
+
+    th { font-size: 0.9em; }
+    td { font-size: 0.8em; }
+
+    input[type="date"] { width: 175px; }
+    select { width: 175px; }
+}
+
+@media (max-width: 664px) {
+    .data-filter {
+        gap: 10px;
+    }
+
+    .date-group {
+        display: flex;
+        align-items: baseline;
+        flex-direction: column;
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    label { 
+        display: none !important; 
+    }
+
+    th { 
+        font-size: 0.9em; 
+        padding: 17px;
+    }
+    td { font-size: 0.8em; }
+
+    input[type="date"] { width: 100%; }
+    select { width: 100%; }
+}
+
