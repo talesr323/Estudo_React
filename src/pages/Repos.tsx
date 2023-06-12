@@ -61,11 +61,10 @@ export function Repos() {
   const { data, isFetching } = useQuery<Repository[]>("/api", async () => {
     const response = await axios.get("https://app.excelent.com.br/api/request/Lancamentos/Pesquisar", {
   headers: {
-    
-    "Authorization-Token":"8f61667acffeb2c74706360afb1d0f7d0a0037e22b772d9504a5f24b882b5b4538c0c80ea742387caec355e17cd4c8bffafb7a614be84771eb7bdd66c5f204d488fe1ede37c1a3f816f323edbd4c138cc52724dfc77d745e88abd37755e22d838f441f1233fdad10b2a21e7f92892d8e2c62c1a2948b733da03dfe6ae7fedd81",
     Accept: "application/json",
+    "Authorization-Token":"8f61667acffeb2c74706360afb1d0f7d0a0037e22b772d9504a5f24b882b5b4538c0c80ea742387caec355e17cd4c8bffafb7a614be84771eb7bdd66c5f204d488fe1ede37c1a3f816f323edbd4c138cc52724dfc77d745e88abd37755e22d838f441f1233fdad10b2a21e7f92892d8e2c62c1a2948b733da03dfe6ae7fedd81",
     User: "gestao@excelent.com.br",
-    App: "API"
+    App: "API",
   },
 });
 
